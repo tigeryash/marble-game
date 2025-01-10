@@ -67,7 +67,7 @@ const Player = () => {
 
   useFrame((state, delta) => {
     //controls
-    const { forward, backward, left, right } = getKeys();
+    const { forward, backward, left, right, respawn } = getKeys();
 
     const impulse = { x: 0, y: 0, z: 0 };
     const torque = { x: 0, y: 0, z: 0 };
@@ -90,6 +90,10 @@ const Player = () => {
     if (right) {
       impulse.x += impulseStrength;
       torque.z -= torqueStrength;
+    }
+
+    if (respawn) {
+      reset();
     }
 
     body.current.applyImpulse(impulse);
