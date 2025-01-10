@@ -1,4 +1,4 @@
-import { useGLTF } from "@react-three/drei";
+import { Float, Text, useGLTF } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { CuboidCollider, Physics, RigidBody } from "@react-three/rapier";
 import { useMemo, useRef, useState } from "react";
@@ -14,6 +14,20 @@ const wallMaterial = new THREE.MeshStandardMaterial({ color: "slategrey" });
 const BlockStart = ({ position = [0, 0, 0] }) => {
   return (
     <group position={position}>
+      <Float floatIntensity={0.25} rotationIntensity={0.25}>
+        <Text
+          scale={0.5}
+          font="./bebas-neue-v9-latin-regular.woff"
+          maxWidth={0.25}
+          lineHeight={0.75}
+          textAlign="right"
+          position={[0.75, 0.65, 0]}
+          rotation-y={-0.25}
+        >
+          Marble Race
+          <meshBasicMaterial toneMapped={false} />
+        </Text>
+      </Float>
       <mesh
         geometry={boxGeometry}
         material={floor1Material}
@@ -33,6 +47,14 @@ const BlockEnd = ({ position = [0, 0, 0] }) => {
   });
   return (
     <group position={position}>
+      <Text
+        font="./bebas-neue-v9-latin-regular.woff"
+        scale={1}
+        position={[0, 2.25, 2]}
+      >
+        Finish
+        <meshBasicMaterial toneMapped={false} />
+      </Text>
       <mesh
         geometry={boxGeometry}
         material={floor1Material}
@@ -71,28 +93,27 @@ const SpinnerBlock = ({ position = [0, 0, 0] }) => {
   });
   return (
     <group position={position}>
-      <Physics>
-        <RigidBody
-          position={[0, 0.3, 0]}
-          ref={obstacle}
-          friction={0}
-          type="kinematicPosition"
-          restitution={0.2}
-        >
-          <mesh
-            receiveShadow
-            castShadow
-            scale={[3.5, 0.3, 0.3]}
-            geometry={boxGeometry}
-            material={obstacleMaterial}
-          />
-        </RigidBody>
-      </Physics>
+      <RigidBody
+        position={[0, 0.3, 0]}
+        ref={obstacle}
+        friction={0}
+        type="kinematicPosition"
+        restitution={0.2}
+      >
+        <mesh
+          receiveShadow
+          castShadow
+          scale={[3.5, 0.3, 0.3]}
+          geometry={boxGeometry}
+          material={obstacleMaterial}
+        />
+      </RigidBody>
       <mesh
         position={[0, -0.1, 0]}
         scale={[4, 0.2, 4]}
         geometry={boxGeometry}
         material={floor2Material}
+        receiveShadow
       />
     </group>
   );
@@ -100,6 +121,7 @@ const SpinnerBlock = ({ position = [0, 0, 0] }) => {
 
 const LimboBlock = ({ position = [0, 0, 0] }) => {
   const obstacle = useRef();
+
   const [timeOffset] = useState(() => Math.random() * Math.PI * 2);
 
   useFrame((state) => {
@@ -112,28 +134,27 @@ const LimboBlock = ({ position = [0, 0, 0] }) => {
 
   return (
     <group position={position}>
-      <Physics>
-        <RigidBody
-          position={[0, 0.3, 0]}
-          ref={obstacle}
-          friction={0}
-          type="kinematicPosition"
-          restitution={0.2}
-        >
-          <mesh
-            receiveShadow
-            castShadow
-            scale={[3.5, 0.3, 0.3]}
-            geometry={boxGeometry}
-            material={obstacleMaterial}
-          />
-        </RigidBody>
-      </Physics>
+      <RigidBody
+        position={[0, 0.3, 0]}
+        ref={obstacle}
+        friction={0}
+        type="kinematicPosition"
+        restitution={0.2}
+      >
+        <mesh
+          receiveShadow
+          castShadow
+          scale={[3.5, 0.3, 0.3]}
+          geometry={boxGeometry}
+          material={obstacleMaterial}
+        />
+      </RigidBody>
       <mesh
         position={[0, -0.1, 0]}
         scale={[4, 0.2, 4]}
         geometry={boxGeometry}
         material={floor2Material}
+        receiveShadow
       />
     </group>
   );
@@ -157,28 +178,29 @@ const AxeBlock = ({ position = [0, 0, 0] }) => {
 
   return (
     <group position={position}>
-      <Physics>
-        <RigidBody
-          position={[0, 0.3, 0]}
-          ref={obstacle}
-          friction={0}
-          type="kinematicPosition"
-          restitution={0.2}
-        >
-          <mesh
-            receiveShadow
-            castShadow
-            scale={[1.5, 1.5, 0.3]}
-            geometry={boxGeometry}
-            material={obstacleMaterial}
-          />
-        </RigidBody>
-      </Physics>
+      <RigidBody
+        position={[0, 0.3, 0]}
+        ref={obstacle}
+        friction={0}
+        type="kinematicPosition"
+        restitution={0.2}
+      >
+        <mesh
+          receiveShadow
+          castShadow
+          scale={[1.5, 1.5, 0.3]}
+          geometry={boxGeometry}
+          material={obstacleMaterial}
+        />
+      </RigidBody>
+
       <mesh
         position={[0, -0.1, 0]}
         scale={[4, 0.2, 4]}
         geometry={boxGeometry}
         material={floor2Material}
+        receiveShadow
+        castShadow
       />
     </group>
   );
@@ -219,7 +241,11 @@ const Bounds = ({ length = 1 }) => {
   );
 };
 
-const Level = ({ count = 5, types = [SpinnerBlock, LimboBlock, AxeBlock] }) => {
+const Level = ({
+  count = 5,
+  types = [SpinnerBlock, LimboBlock, AxeBlock],
+  seed = 0,
+}) => {
   const blocks = useMemo(() => {
     const blocks = [];
 
@@ -228,7 +254,7 @@ const Level = ({ count = 5, types = [SpinnerBlock, LimboBlock, AxeBlock] }) => {
       blocks.push(type);
     }
     return blocks;
-  }, []);
+  }, [count, types, seed]);
   return (
     <>
       <BlockStart position={[0, 0, 0]} />
